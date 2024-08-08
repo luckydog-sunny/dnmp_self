@@ -10,4 +10,4 @@ ENV TIMEZONE=${timezone:-"Asia/Shanghai"} \
 
 WORKDIR /opt/www
 
-ENTRYPOINT ["php", "/opt/www/mineadmin/bin/hyperf.php", "start"]
+ENTRYPOINT ["php", "/opt/www/gccleaner/bin/hyperf.php", "start"]
