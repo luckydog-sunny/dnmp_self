@@ -23,24 +23,25 @@ services:
     networks:
       - default
 
-  # php74:
+
+  # php82:
   #   build:
-  #     context: ./services/php74
+  #     context: ./services/php82
   #     args:
-  #       PHP74_VERSION: ${PHP74_VERSION}
-  #       PHP74_EXTENSIONS: ${PHP74_EXTENSIONS}
+  #       PHP82_VERSION: ${PHP82_VERSION}
+  #       PHP82_EXTENSIONS: ${PHP82_EXTENSIONS}
   #       CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
   #   ports:
-  #     - "${PHP74_PORT_9000}:9000"
-  #     - "${PHP74_PORT_9501}:9501"
-  #     - "${PHP74_PORT_9502}:9502"
+  #     - "${PHP82_PORT_9000}:9000"
+  #     - "${PHP82_PORT_9501}:9501"
+  #     - "${PHP82_PORT_9502}:9502"
   #   volumes:
   #     - ${SOURCE_DIR}:/www/:rw
-  #     - ${PHP74_SSL_DIR}:/data/cert:ro
-  #     - ${PHP74_INI_FILE}:/usr/local/etc/php/php.ini:ro
-  #     - ${PHP74_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:ro
-  #     - ${PHP74_LOG_DIR}:/var/log/php
-  #     - ${PHP74_SSH_DIR}:/home/www/.ssh:ro
+  #     - ${PHP82_SSL_DIR}:/data/cert:ro
+  #     - ${PHP82_INI_FILE}:/usr/local/etc/php/php.ini:ro
+  #     - ${PHP82_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:ro
+  #     - ${PHP82_LOG_DIR}:/var/log/php
+  #     - ${PHP82_SSH_DIR}:/home/www/.ssh:ro
   #   restart: always
   #   command: php-fpm
   #   cap_add:
@@ -48,63 +49,13 @@ services:
   #   networks:
   #     - default
 
-
-  php82:
-    build:
-      context: ./services/php82
-      args:
-        PHP82_VERSION: ${PHP82_VERSION}
-        PHP82_EXTENSIONS: ${PHP82_EXTENSIONS}
-        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-    ports:
-      - "${PHP82_PORT_9000}:9000"
-      - "${PHP82_PORT_9501}:9501"
-      - "${PHP82_PORT_9502}:9502"
-    volumes:
-      - ${SOURCE_DIR}:/www/:rw
-      - ${PHP82_SSL_DIR}:/data/cert:ro
-      - ${PHP82_INI_FILE}:/usr/local/etc/php/php.ini:ro
-      - ${PHP82_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:ro
-      - ${PHP82_LOG_DIR}:/var/log/php
-      - ${PHP82_SSH_DIR}:/home/www/.ssh:ro
-    restart: always
-    command: php-fpm
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
-
-#  php81:
-#    build:
-#      context: ./services/php81
-#      args:
-#        PHP81_VERSION: ${PHP81_VERSION}
-#        PHP81_EXTENSIONS: ${PHP81_EXTENSIONS}
-#        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-#    ports:
-#      - "${PHP81_PORT_9000}:9000"
-#      - "${PHP81_PORT_9501}:9501"
-#      - "${PHP81_PORT_9502}:9502"
-#    volumes:
-#      - ${SOURCE_DIR}:/www/:rw
-#      - ${PHP81_SSL_DIR}:/data/cert:ro
-#      - ${PHP81_INI_FILE}:/usr/local/etc/php/php.ini:ro
-#      - ${PHP81_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:ro
-#      - ${PHP81_LOG_DIR}:/var/log/php
-#      - ${PHP81_SSH_DIR}:/home/www/.ssh:ro
-#    restart: always
-#    command: php-fpm
-#    cap_add:
-#      - SYS_PTRACE
-#    networks:
-#      - default
-
   nginx:
      build:
        context: ./services/nginx
        args:
          NGINX_VERSION: ${NGINX_VERSION}
      volumes:
+       - ./services/certbot/letsencrypt:/etc/letsencrypt
        - ${SOURCE_DIR}:/www/:rw
        - ${NGINX_SSL_CERTIFICATE_DIR}:/ssl:rw
        - ${NGINX_CONFD_DIR}:/etc/nginx/conf.d/:rw
@@ -119,6 +70,15 @@ services:
      command: nginx -g 'daemon off;'
      networks:
        - default
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - ./services/certbot/letsencrypt:/etc/letsencrypt
+      - ${SOURCE_DIR}:/var/www/certbot
+    command: renew
+
 
   mysql8:
      build:
@@ -150,68 +110,6 @@ services:
      restart: always
      networks:
        - default
-
-  rabbitmq:
-     build:
-       context: ./services/rabbitmq
-       args:
-         RABBITMQ_VERSION: ${RABBITMQ_VERSION}
-     ports:
-       - "${RABBITMQ_PORT_WEB}:15672"
-       - "${RABBITMQ_PORT_SERVICE}:5672"
-     environment:
-       - RABBITMQ_DEFAULT_USER="${RABBITMQ_DEFAULT_USER}"
-       - RABBITMQ_DEFAULT_PASS="${RABBITMQ_DEFAULT_PASS}"
-     restart: always
-     networks:
-       - default
-
-
-# elasticsearch:
-#   build:
-#     context: ./services/elasticsearch
-#     args:
-#       ELASTICSEARCH_VERSION: ${ELASTICSEARCH_VERSION}
-#       # ELASTICSEARCH_PLUGINS: ${ELASTICSEARCH_PLUGINS}
-#   environment:
-#     - TZ=$TZ
-#     - discovery.type=single-node
-#     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#   volumes:
-#     - ${DATA_DIR}/esdata:/usr/share/elasticsearch/data
-#     - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/config/elasticsearch.yml
-#   hostname: elasticsearch
-#   restart: always
-#   ports:
-#     - "${ELASTICSEARCH_HOST_PORT_C}:9200"
-#     - "${ELASTICSEARCH_HOST_PORT_S}:9300"
-
-# logstash:
-#   image: logstash:${LOGSTASH_VERSION}
-#   container_name: logstash
-#   hostname: logstash
-#   restart: always
-#   depends_on:
-#     - elasticsearch
-#   environment:
-#     TZ: "$TZ"
-#   ports:
-#     - "${LOGSTASH_HOST_PORT_C}:9600"
-#     - "${LOGSTASH_HOST_PORT_S}:5044"
-
-# kibana:
-#   image: kibana:${KIBANA_VERSION}
-#   container_name: kibana
-#   environment:
-#     TZ: "$TZ"
-#     elasticsearch.hosts: host.docker.internal:9200
-#     I18N_LOCALE: "${KIBANA_I18N_LOCALE}"
-#   hostname: kibana
-#   depends_on:
-#     - elasticsearch
-#   restart: always
-#   ports:
-#     - "${KIBANA_HOST}:5601"
 
 networks:
   default:
