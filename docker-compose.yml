@@ -77,7 +77,7 @@ services:
     volumes:
       - ./services/certbot/letsencrypt:/etc/letsencrypt
       - ${SOURCE_DIR}:/var/www/certbot
-    entrypoint: /bin/sh -c "trap exit TERM; while :; do sleep 6h & wait $${!}; certbot renew; done"
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot certonly --webroot -w /var/www/certbot/gccleaneroffcial --email 943891935@qq.com --agree-tos --no-eff-email -d gccleaner.top -d www.gccleaner.top && certbot certonly --webroot -w /var/www/certbot/gccleaneroffcial/h5 --email 943891935@qq.com --agree-tos --no-eff-email -d h5.gccleaner.top && certbot certonly --webroot -w /var/www/certbot/gccleaner --email 943891935@qq.com --agree-tos --no-eff-email -d api.gccleaner.top --renew-by-default --non-interactive; sleep 6h & wait $${!}; done;'"
     command: renew
 
 
