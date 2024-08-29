@@ -19,6 +19,7 @@ services:
     cap_add:
       - SYS_PTRACE
     restart: always
+    entrypoint: ["php", "/opt/www/bin/hyperf.php", "start"]
     tty: true
     networks:
       - default
