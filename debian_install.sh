@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 更新包列表
-apt-get update
+apt-get update -y
 
 # 安装git
 apt-get install -y git
@@ -25,7 +25,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # 更新包列表
-sudo apt-get update
+sudo apt-get update -y
 
 # 安装Docker
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
