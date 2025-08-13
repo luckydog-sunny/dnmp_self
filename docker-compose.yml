@@ -1,28 +1,28 @@
 services:
-  mine:
-    build:
-      context: ./services/mine
-      args:
-        MINE_VERSION : ${MINE_VERSION}
-    # platform: linux/arm64
-    ports:
-      - "${MINE_PORT_9000}:9000"
-      - "${MINE_PORT_9501}:9501"
-      - "${MINE_PORT_9502}:9502"
-    user: root
-    privileged: true
-    volumes:
-      - ${SOURCE_DIR}:/opt/www:rw
-    environment:
-      - APP_ENV=dev
-      - SCAN_CACHEABLE=false
-    cap_add:
-      - SYS_PTRACE
-    restart: always
-    entrypoint: ["php", "/opt/www/project/bin/hyperf.php", "start"]
-    tty: true
-    networks:
-      - default
+  # mine:
+  #   build:
+  #     context: ./services/mine
+  #     args:
+  #       MINE_VERSION : ${MINE_VERSION}
+  #   # platform: linux/arm64
+  #   ports:
+  #     - "${MINE_PORT_9000}:9000"
+  #     - "${MINE_PORT_9501}:9501"
+  #     - "${MINE_PORT_9502}:9502"
+  #   user: root
+  #   privileged: true
+  #   volumes:
+  #     - ${SOURCE_DIR}:/opt/www:rw
+  #   environment:
+  #     - APP_ENV=dev
+  #     - SCAN_CACHEABLE=false
+  #   cap_add:
+  #     - SYS_PTRACE
+  #   restart: always
+  #   entrypoint: ["php", "/opt/www/project/bin/hyperf.php", "start"]
+  #   tty: true
+  #   networks:
+  #     - default
 
 
   # php82:
@@ -72,51 +72,51 @@ services:
      networks:
        - default
 
-  certbot:
-    image: certbot/certbot:latest
-    container_name: certbot
-    volumes:
-      - ./services/certbot/letsencrypt:/etc/letsencrypt
-      - ${SOURCE_DIR}:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; 
-     do certbot certonly --webroot -w /var/www/certbot/calculatorxoffcial --email 943891935@qq.com --agree-tos --no-eff-email -d calculatorx.top -d www.calculatorx.top --non-interactive  --force-renewal &&
-     certbot certonly --webroot -w /var/www/certbot/calculatorxoffcial/h5 --email 943891935@qq.com --agree-tos --no-eff-email -d h5.calculatorx.top --non-interactive  --force-renewal &&
-     certbot certonly --webroot -w /var/www/certbot/calculatorxadmin/web/dist --email 943891935@qq.com --agree-tos --no-eff-email -d hmadmin.calculatorx.top --non-interactive  --force-renewal &&
-     certbot certonly --webroot -w /var/www/certbot/calculatorxadmin --email 943891935@qq.com --agree-tos --no-eff-email -d api.calculatorx.top --non-interactive --force-renewal;
-     sleep 12h & wait $${!}; done;'"
-    command: renew
+  # certbot:
+  #   image: certbot/certbot:latest
+  #   container_name: certbot
+  #   volumes:
+  #     - ./services/certbot/letsencrypt:/etc/letsencrypt
+  #     - ${SOURCE_DIR}:/var/www/certbot
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; 
+  #    do certbot certonly --webroot -w /var/www/certbot/calculatorxoffcial --email 943891935@qq.com --agree-tos --no-eff-email -d calculatorx.top -d www.calculatorx.top --non-interactive  --force-renewal &&
+  #    certbot certonly --webroot -w /var/www/certbot/calculatorxoffcial/h5 --email 943891935@qq.com --agree-tos --no-eff-email -d h5.calculatorx.top --non-interactive  --force-renewal &&
+  #    certbot certonly --webroot -w /var/www/certbot/calculatorxadmin/web/dist --email 943891935@qq.com --agree-tos --no-eff-email -d hmadmin.calculatorx.top --non-interactive  --force-renewal &&
+  #    certbot certonly --webroot -w /var/www/certbot/calculatorxadmin --email 943891935@qq.com --agree-tos --no-eff-email -d api.calculatorx.top --non-interactive --force-renewal;
+  #    sleep 12h & wait $${!}; done;'"
+  #   command: renew
 
 
-  mysql8:
-     build:
-       context: ./services/mysql8
-       args:
-         MYSQL8_VERSION: ${MYSQL8_VERSION}
-     ports:
-       - "${MYSQL8_HOST_PORT}:3306"
-     volumes:
-       - ${MYSQL8_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
-       - ${DATA_DIR}/mysql8:/var/lib/mysql/:rw
-       - ${MYSQL8_LOG_DIR}:/var/log/mysql/:rw
-     environment:
-       MYSQL_ROOT_PASSWORD: "${MYSQL8_ROOT_PASSWORD}"
-       MYSQL_ROOT_HOST: "${MYSQL8_ROOT_HOST}"
-       TZ: "$TZ"
-     restart: always
-     command: "--character-set-server=utf8mb4"
-     networks:
-       - default
+  # mysql8:
+  #    build:
+  #      context: ./services/mysql8
+  #      args:
+  #        MYSQL8_VERSION: ${MYSQL8_VERSION}
+  #    ports:
+  #      - "${MYSQL8_HOST_PORT}:3306"
+  #    volumes:
+  #      - ${MYSQL8_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
+  #      - ${DATA_DIR}/mysql8:/var/lib/mysql/:rw
+  #      - ${MYSQL8_LOG_DIR}:/var/log/mysql/:rw
+  #    environment:
+  #      MYSQL_ROOT_PASSWORD: "${MYSQL8_ROOT_PASSWORD}"
+  #      MYSQL_ROOT_HOST: "${MYSQL8_ROOT_HOST}"
+  #      TZ: "$TZ"
+  #    restart: always
+  #    command: "--character-set-server=utf8mb4"
+  #    networks:
+  #      - default
 
-  redis-db:
-     build:
-       context: ./services/redis
-       args:
-         REDIS_VERSION: ${REDIS_VERSION}
-     ports:
-       - "${REDIS_HOST_PORT}:6379"
-     restart: always
-     networks:
-       - default
+  # redis-db:
+  #    build:
+  #      context: ./services/redis
+  #      args:
+  #        REDIS_VERSION: ${REDIS_VERSION}
+  #    ports:
+  #      - "${REDIS_HOST_PORT}:6379"
+  #    restart: always
+  #    networks:
+  #      - default
 
 networks:
   default:
