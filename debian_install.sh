@@ -31,6 +31,6 @@ sudo apt-get update -y
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
 # 创建docker目录
-mkdir /docker
+sudo mkdir /docker
 
 echo "Installation completed successfully."
