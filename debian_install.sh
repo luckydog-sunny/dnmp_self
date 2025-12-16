@@ -33,4 +33,8 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 # 创建docker目录
 sudo mkdir /docker
 
+cd /docker
+
+sudo git clone https://github.com/luckydog-sunny/dnmp_self.git
+
 echo "Installation completed successfully."
