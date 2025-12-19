@@ -37,4 +37,6 @@ cd /docker
 
 sudo git clone https://github.com/luckydog-sunny/dnmp_self.git
 
+sudo chown -R admin:admin /docker/dnmp_self/
+
 echo "Installation completed successfully."
