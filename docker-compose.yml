@@ -80,9 +80,7 @@ services:
   #     - ${SOURCE_DIR}:/var/www/certbot
   #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; 
   #   do certbot certonly --webroot -w /var/www/certbot/calculatorxoffcial --email 943891935@qq.com --agree-tos --no-eff-email -d calculatorx.top -d www.calculatorx.top --non-interactive  --force-renewal &&
-  #   certbot certonly --webroot -w /var/www/certbot/calculatorxoffcial/h5 --email 943891935@qq.com --agree-tos --no-eff-email -d h5.calculatorx.top --non-interactive  --force-renewal &&
-  #   certbot certonly --webroot -w /var/www/certbot/calculatorxadmin/web/dist --email 943891935@qq.com --agree-tos --no-eff-email -d hmadmin.calculatorx.top --non-interactive  --force-renewal &&
-  #   certbot certonly --webroot -w /var/www/certbot/calculatorxadmin --email 943891935@qq.com --agree-tos --no-eff-email -d api.calculatorx.top --non-interactive --force-renewal;
+  #   certbot certonly --webroot -w /var/www/certbot/calculatorxoffcial/h5 --email 943891935@qq.com --agree-tos --no-eff-email -d h5.calculatorx.top --non-interactive  --force-renewal;
   #   sleep 12h & wait $${!}; done;'"
   #   command: renew
 
