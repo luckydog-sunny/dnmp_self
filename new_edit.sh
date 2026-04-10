@@ -20,25 +20,25 @@ fi
 read -r -p "域名前缀，逗号分隔（如 aaa,bbb,ccc → aaa.${PROJECT}.top …）: " PREFIX_RAW
 PREFIX_RAW="${PREFIX_RAW//，/,}"
 
+OFFCIAL="${PROJECT}offcial"
+APEX="${PROJECT}.top"
 SERVER_NAMES=""
-CERTBOT_D=""
+# certbot：先 apex，再各前缀子域，如 -d abc.top -d aaa.abc.top -d bbb.abc.top
+CERTBOT_D="-d ${APEX}"
+
 IFS=',' read -ra PARTS <<< "$PREFIX_RAW"
 for p in "${PARTS[@]}"; do
   p="$(printf '%s' "$p" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
   [[ -z "$p" ]] && continue
   SERVER_NAMES+="${p}.${PROJECT}.top "
-  CERTBOT_D+="-d ${p}.${PROJECT}.top "
+  CERTBOT_D+=" -d ${p}.${PROJECT}.top"
 done
 SERVER_NAMES="${SERVER_NAMES%% }"
-CERTBOT_D="${CERTBOT_D%% }"
 
 if [[ -z "$SERVER_NAMES" ]]; then
   echo "错误：至少输入一个域名前缀" >&2
   exit 1
 fi
-
-OFFCIAL="${PROJECT}offcial"
-APEX="${PROJECT}.top"
 
 sed "s/phonefinderoffcial/${OFFCIAL}/g" "$NGINX_CONF" > "${NGINX_CONF}.tmp"
 mv "${NGINX_CONF}.tmp" "$NGINX_CONF"
