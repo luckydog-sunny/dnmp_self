@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 1. 删除 h5/www 站点配置；2. 按项目名称与域名前缀更新 nginx 与 docker-compose
+# Remove h5/www site configs; update nginx and docker-compose from project name and domain prefixes.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -10,20 +10,20 @@ DC="$ROOT/docker-compose.yml"
 
 rm -f "$CONFD/h5.bd.conf" "$CONFD/www.bd.conf"
 
-read -r -p "项目名称（将生成 {名称}offcial，主域名为 {名称}.top）: " PROJECT
+read -r -p "Project name (yields {name}offcial, apex {name}.top): " PROJECT
 PROJECT="${PROJECT//[[:space:]]/}"
 if [[ -z "$PROJECT" ]]; then
-  echo "错误：项目名称不能为空" >&2
+  echo "Error: project name cannot be empty." >&2
   exit 1
 fi
 
-read -r -p "域名前缀，逗号分隔（如 aaa,bbb,ccc → aaa.${PROJECT}.top …）: " PREFIX_RAW
+read -r -p "Comma-separated domain prefixes (e.g. aaa,bbb → apex + aaa.${PROJECT}.top …): " PREFIX_RAW
 PREFIX_RAW="${PREFIX_RAW//，/,}"
 
 OFFCIAL="${PROJECT}offcial"
 APEX="${PROJECT}.top"
 SERVER_NAMES=""
-# certbot：先 apex，再各前缀子域，如 -d abc.top -d aaa.abc.top -d bbb.abc.top
+# certbot: apex first, then each prefix subdomain, e.g. -d abc.top -d aaa.abc.top
 CERTBOT_D="-d ${APEX}"
 
 IFS=',' read -ra PARTS <<< "$PREFIX_RAW"
@@ -36,9 +36,12 @@ done
 SERVER_NAMES="${SERVER_NAMES%% }"
 
 if [[ -z "$SERVER_NAMES" ]]; then
-  echo "错误：至少输入一个域名前缀" >&2
+  echo "Error: enter at least one domain prefix." >&2
   exit 1
 fi
+
+# nginx server_name: apex ${PROJECT}.top plus each prefix subdomain (e.g. aaa.${PROJECT}.top)
+SERVER_NAMES="${APEX} ${SERVER_NAMES}"
 
 sed "s/phonefinderoffcial/${OFFCIAL}/g" "$NGINX_CONF" > "${NGINX_CONF}.tmp"
 mv "${NGINX_CONF}.tmp" "$NGINX_CONF"
@@ -59,8 +62,8 @@ awk -v off="$OFFCIAL" -v cb="$CERTBOT_D" '
 }' "$DC" > "${DC}.tmp"
 mv "${DC}.tmp" "$DC"
 
-echo "完成："
-echo "  nginx map 目录: /www/${OFFCIAL}"
-echo "  server_name / 证书目录主域: ${APEX}"
-echo "  server_name 列表: ${SERVER_NAMES}"
+echo "Done."
+echo "  nginx map root: /www/${OFFCIAL}"
+echo "  apex (certs / primary): ${APEX}"
+echo "  server_name: ${SERVER_NAMES}"
 echo "  certbot: ${CERTBOT_D}"
